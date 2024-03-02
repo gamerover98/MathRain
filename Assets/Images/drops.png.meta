@@ -118,7 +118,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: drops_0
+      name: drop
       rect:
         serializedVersion: 2
         x: 0
@@ -138,6 +138,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: spash
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 0
+        width: 84
+        height: 165
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4db4cd650f478448b7228790ad4904c
+      internalID: 622435641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -149,8 +170,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+      drop: 1441638323
       drop_0: 143714112
-      drops_0: 1441638323
+      spash: 622435641
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

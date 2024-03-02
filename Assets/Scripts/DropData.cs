@@ -9,9 +9,12 @@ public class DropData : ScriptableObject
 
     [SerializeField] private int secondNumber;
 
+    [SerializeField] private float speed = 0.25F;
+    
     public OperatorType OperatorType => operatorType;
     public int FirstNumber => firstNumber;
     public int SecondNumber => secondNumber;
+    public float Speed => speed;
 }
 
 public enum OperatorType
