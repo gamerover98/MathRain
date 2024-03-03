@@ -7,7 +7,7 @@ public class Drop : MonoBehaviour
     [SerializeField] private GameObject operationText;
     [SerializeField] private GameObject firstNumberText;
     [SerializeField] private GameObject secondNumberText;
-    [SerializeField] private DropData data;
+    public DropData data;
 
     [SerializeField] private GameObject dropImage;
     [SerializeField] private GameObject splashImage;
@@ -54,6 +54,8 @@ public class Drop : MonoBehaviour
         _stateType = DropStateType.Resolved;
         dropImage.SetActive(false);
         splashImage.SetActive(true);
+
+        GameManager.Instance.Score += data.Points;
     }
     
     public void Splash()
