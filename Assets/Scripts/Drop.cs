@@ -1,3 +1,4 @@
+using System;
 using com.cyborgAssets.inspectorButtonPro;
 using TMPro;
 using UnityEngine;
@@ -24,6 +25,7 @@ public class Drop : MonoBehaviour
     [SerializeField] private GameObject splashImage;
     [SerializeField] private float splashAnimationTtl;
 
+    private Canvas _gameGUICanvas;
     private TextMeshProUGUI _operatorTextGUI;
     private TextMeshProUGUI _firstNumberTextGUI;
     private TextMeshProUGUI _secondNumberTextGUI;
@@ -44,11 +46,17 @@ public class Drop : MonoBehaviour
         OnEnable();
     }
 
+    private void Start()
+    {
+        _gameGUICanvas = GetComponentInParent<Canvas>();
+    }
+
     private void Update()
     {
         if (IsAlive)
         {
-            transform.Translate(new Vector2(0.0F, 9.81F * -Data.Speed) * Time.deltaTime);
+            var vector = new Vector2(0.0F, 9.81F * -Data.Speed) * _gameGUICanvas.scaleFactor;
+            transform.Translate(vector * Time.deltaTime);
         }
         else if (IsSplashed || IsResolved)
         {
@@ -56,7 +64,10 @@ public class Drop : MonoBehaviour
                 _splashAnimationStartTime = Time.time;
 
             if (Time.time - _splashAnimationStartTime >= splashAnimationTtl)
+            {
                 DropManager.Instance.ReturnObjectToPool(this);
+                _splashAnimationStartTime = -1;
+            }
         }
     }
 

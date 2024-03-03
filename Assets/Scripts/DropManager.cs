@@ -8,10 +8,11 @@ public class DropManager : MonoBehaviour
 {
     public static DropManager Instance { get; private set; }
 
-    [SerializeField] private GameObject gameGUICanvas;
+    [SerializeField] private GameObject gameGUICanvasObject;
+    private Canvas _gameGUICanvas;
 
     public IEnumerable<Drop> SpawnedDrops =>
-        gameGUICanvas.GetComponentsInChildren<Drop>();
+        gameGUICanvasObject.GetComponentsInChildren<Drop>();
 
     [SerializeField] private GameObject dropObjectPrefab;
     [SerializeField] private int dropPoolSize = 10;
@@ -24,6 +25,8 @@ public class DropManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
 
+        _gameGUICanvas = gameGUICanvasObject.GetComponent<Canvas>();
+
         for (var i = 0; i < dropPoolSize; i++)
         {
             var dropObject =
@@ -31,7 +34,7 @@ public class DropManager : MonoBehaviour
                     dropObjectPrefab,
                     Vector3.zero,
                     Quaternion.identity,
-                    gameGUICanvas.transform);
+                    gameGUICanvasObject.transform);
             dropObject.SetActive(false);
 
             DropPool.Push(dropObject.GetComponent<Drop>());
@@ -41,9 +44,19 @@ public class DropManager : MonoBehaviour
     [ProButton]
     public void SpawnDrop()
     {
+        var scaleFactor = _gameGUICanvas.scaleFactor;
+        var rect = _gameGUICanvas.GetComponent<RectTransform>().rect;
+
+        var minX = (int)(Mathf.Abs(rect.xMin) * scaleFactor);
+        var maxX = (int)(minX + Mathf.Abs(rect.xMax) * scaleFactor);
+        var minY = (int)(Mathf.Abs(rect.yMin) * scaleFactor);
+        var maxY = (int)(minY + Mathf.Abs(rect.yMax) * scaleFactor);
+
         var random = new Random();
         var dropData = dropDataList[random.Next(0, dropDataList.Count)];
-        var position = new Vector2(random.Next(150, 1920 - 150), 1100);
+        var positionX = (float)random.Next(200, maxX - 200);
+
+        var position = new Vector2(positionX, maxY + 100 * scaleFactor);
         GetDropFromPool(position, dropData);
     }
 
@@ -65,6 +78,10 @@ public class DropManager : MonoBehaviour
     public void ReturnObjectToPool(Drop drop)
     {
         drop.gameObject.SetActive(false);
+        var dropTransform = drop.transform;
+
+        dropTransform.position = new Vector2(0, 0);
+        dropTransform.rotation = Quaternion.identity;
         DropPool.Push(drop);
     }
 }
