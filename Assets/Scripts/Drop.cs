@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using com.cyborgAssets.inspectorButtonPro;
 using TMPro;
 using UnityEngine;
@@ -36,6 +36,7 @@ public class Drop : MonoBehaviour
     public bool IsResolved => _stateType == DropStateType.Resolved;
     public bool IsSplashed => _stateType == DropStateType.Splash;
 
+    private Coroutine _coroutine;
     private float _splashAnimationStartTime = -1;
 
     private void Awake()
@@ -45,36 +46,26 @@ public class Drop : MonoBehaviour
         _secondNumberTextGUI = secondNumberText.GetComponent<TextMeshProUGUI>();
         OnEnable();
     }
-
-    private void Start()
-    {
-        _gameGUICanvas = GetComponentInParent<Canvas>();
-    }
-
+    
     private void Update()
     {
-        if (IsAlive)
-        {
-            var vector = new Vector2(0.0F, 9.81F * -Data.Speed) * _gameGUICanvas.scaleFactor;
-            transform.Translate(vector * Time.deltaTime);
-        }
-        else if (IsSplashed || IsResolved)
-        {
-            if (_splashAnimationStartTime < 0)
-                _splashAnimationStartTime = Time.time;
+        if (!IsSplashed && !IsResolved) return;
 
-            if (Time.time - _splashAnimationStartTime >= splashAnimationTtl)
-            {
-                DropManager.Instance.ReturnObjectToPool(this);
-                _splashAnimationStartTime = -1;
-            }
-        }
+        if (_splashAnimationStartTime < 0)
+            _splashAnimationStartTime = Time.time;
+
+        if (!(Time.time - _splashAnimationStartTime >= splashAnimationTtl)) return;
+
+        DropManager.Instance.ReturnObjectToPool(this);
+        _splashAnimationStartTime = -1;
     }
 
     private void OnEnable()
     {
+        _gameGUICanvas = GetComponentInParent<Canvas>();
         _stateType = DropStateType.Alive;
         UpdateDropData();
+        _coroutine = StartCoroutine(Coroutine());
     }
 
     private void OnDisable()
@@ -84,6 +75,21 @@ public class Drop : MonoBehaviour
 
         dropImage.SetActive(true);
         splashImage.SetActive(false);
+
+        if (_coroutine != null)
+            StopCoroutine(_coroutine);
+    }
+    
+    private IEnumerator Coroutine()
+    {
+        while (true)
+        {
+            if (!IsAlive) yield break;
+
+            var vector = new Vector2(0.0F, 9.81F * -Data.Speed) * _gameGUICanvas.scaleFactor;
+            transform.Translate(vector * Time.deltaTime);
+            yield return null;
+        }
     }
 
     public void Resolved()
