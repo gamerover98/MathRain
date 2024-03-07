@@ -11,6 +11,8 @@ public class DropManager : MonoBehaviour
     [SerializeField] private GameObject gameGUICanvasObject;
     private Canvas _gameGUICanvas;
 
+    [SerializeField] private GameObject dropsContainer;
+    
     public IEnumerable<Drop> SpawnedDrops =>
         gameGUICanvasObject.GetComponentsInChildren<Drop>();
 
@@ -34,7 +36,7 @@ public class DropManager : MonoBehaviour
                     dropObjectPrefab,
                     Vector3.zero,
                     Quaternion.identity,
-                    gameGUICanvasObject.transform);
+                    dropsContainer.transform);
             dropObject.SetActive(false);
 
             DropPool.Push(dropObject.GetComponent<Drop>());
