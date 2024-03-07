@@ -8,6 +8,9 @@ public class GUIManager : MonoBehaviour
     [SerializeField] private GameObject scoreTextObject;
     private TextMeshProUGUI _scoreText;
 
+    [SerializeField] private GameObject waterPanelObject;
+    private WaterPanel _waterPanel;
+
     // Start is called before the first frame update
     private void Awake()
     {
@@ -15,9 +18,12 @@ public class GUIManager : MonoBehaviour
             Instance = this;
 
         _scoreText = scoreTextObject.GetComponent<TextMeshProUGUI>();
+        _waterPanel = waterPanelObject.GetComponent<WaterPanel>();
     }
 
     public void UpdateScoreText(int newScore) =>
         _scoreText.SetText($"Score: {newScore}");
-    
+
+    public void UpdateWaterLevel(int newWaterLevel) =>
+        _waterPanel.UpdateWaterLevel(newWaterLevel);
 }

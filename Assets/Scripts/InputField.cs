@@ -2,24 +2,21 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class BottomPanel : MonoBehaviour
+public class InputField : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField inputField;
     [SerializeField] private int maxDigits = 5;
+    private TMP_InputField _tmpInputField;
+
+    public void Awake()
+    {
+        _tmpInputField = GetComponent<TMP_InputField>();
+    }
 
     private void Start()
     {
-        inputField.Select();
-        inputField.onValueChanged.AddListener(OnInputValueChanged);
-        inputField.onValidateInput += OnValidateInput;
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        other.gameObject.TryGetComponent<Drop>(out var drop);
-        if (drop == null) return;
-
-        drop.Splash();
+        _tmpInputField.Select();
+        _tmpInputField.onValueChanged.AddListener(OnInputValueChanged);
+        _tmpInputField.onValidateInput += OnValidateInput;
     }
 
     private void OnInputValueChanged(string newValue)
@@ -32,7 +29,7 @@ public class BottomPanel : MonoBehaviour
                      .Where(drop => drop.Data.Result == value))
         {
             drop.Resolved();
-            inputField.text = $"{char.MinValue}";
+            _tmpInputField.text = $"{char.MinValue}";
         }
     }
 
