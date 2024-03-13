@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
             {
                 //TODO: endgame
                 Debug.Log("END GAME!!!");
+                SaveGameScore();
+                ResetGame();
             }
         }
     }
@@ -48,5 +50,31 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         WaterLevel = 0;
+    }
+
+    [ProButton]
+    public void SaveGameScore()
+    {
+        var scoreboard = LoadScoreboard();
+        scoreboard.AddGame(new Game(Score));
+
+        PlayerPrefs.SetString("Scoreboard", JsonUtility.ToJson(scoreboard));
+        PlayerPrefs.Save();
+    }
+
+    public Scoreboard LoadScoreboard()
+    {
+        return PlayerPrefs.HasKey("Scoreboard")
+            ? JsonUtility.FromJson<Scoreboard>(PlayerPrefs.GetString("Scoreboard", "{}"))
+            : new Scoreboard();
+    }
+
+    [ProButton]
+    public void ResetGame()
+    {
+        Score = 0;
+        //TODO: reset input text field
+        foreach (var spawnedDrop in DropManager.Instance.SpawnedDrops)
+            DropManager.Instance.ReturnObjectToPool(spawnedDrop);
     }
 }

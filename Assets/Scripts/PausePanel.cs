@@ -7,8 +7,11 @@ public class PausePanel : MonoBehaviour
 {
     [SerializeField] private GameObject pauseButtonObject;
 
-    [SerializeField] private GameObject scoreTextObject;
-    private TextMeshProUGUI scoreText;
+    [SerializeField] private GameObject maxScoreTextObject;
+    private TextMeshProUGUI maxScoreText;
+    
+    [SerializeField] private GameObject currentScoreTextObject;
+    private TextMeshProUGUI currentScoreText;
 
     [SerializeField] private GameObject resumeButtonObject;
     private Button resumeButton;
@@ -18,7 +21,8 @@ public class PausePanel : MonoBehaviour
 
     private void Awake()
     {
-        scoreText = scoreTextObject.GetComponent<TextMeshProUGUI>();
+        maxScoreText = maxScoreTextObject.GetComponent<TextMeshProUGUI>();
+        currentScoreText = currentScoreTextObject.GetComponent<TextMeshProUGUI>();
         resumeButton = resumeButtonObject.GetComponent<Button>();
         inputField = inputFieldObject.GetComponent<InputField>();
 
@@ -34,7 +38,8 @@ public class PausePanel : MonoBehaviour
     {
         var paused = IsPaused();
 
-        scoreText.SetText($"{GameManager.Instance.Score}");
+        maxScoreText.SetText($"{GameManager.Instance.LoadScoreboard().GetMaxScore()}");
+        currentScoreText.SetText($"{GameManager.Instance.Score}");
         pauseButtonObject.SetActive(!paused);
 
         if (paused)
