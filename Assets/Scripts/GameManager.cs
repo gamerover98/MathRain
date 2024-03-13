@@ -7,33 +7,31 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private int maxWaterLevel = 2;
 
-    private int _scoreValue;
+    private int score;
 
     public int Score
     {
-        get => _scoreValue;
+        [ProButton] get => score;
         [ProButton]
         set
         {
-            _scoreValue = value;
-            GUIManager.Instance.UpdateScoreText(_scoreValue);
+            score = value;
+            GUIManager.Instance.UpdateScoreText(score);
         }
     }
 
-    private int _waterLevelValue;
+    private int waterLevel;
 
     public int WaterLevel
     {
-        get => _waterLevelValue;
+        [ProButton] get => waterLevel;
         [ProButton]
         set
         {
-            if (value > 0 && value <= maxWaterLevel)
-            {
-                _waterLevelValue = value;
-                GUIManager.Instance.UpdateWaterLevel(_waterLevelValue);
-            }
-            else
+            waterLevel = value;
+            GUIManager.Instance.UpdateWaterLevel(waterLevel);
+
+            if (value >= maxWaterLevel)
             {
                 //TODO: endgame
                 Debug.Log("END GAME!!!");
@@ -45,5 +43,10 @@ public class GameManager : MonoBehaviour
     {
         if (Instance == null)
             Instance = this;
+    }
+
+    private void Start()
+    {
+        WaterLevel = 0;
     }
 }

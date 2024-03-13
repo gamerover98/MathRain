@@ -9,7 +9,7 @@ public class DropManager : MonoBehaviour
     public static DropManager Instance { get; private set; }
 
     [SerializeField] private GameObject gameGUICanvasObject;
-    private Canvas _gameGUICanvas;
+    private Canvas gameGUICanvas;
 
     [SerializeField] private GameObject dropsContainer;
     
@@ -27,7 +27,7 @@ public class DropManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
 
-        _gameGUICanvas = gameGUICanvasObject.GetComponent<Canvas>();
+        gameGUICanvas = gameGUICanvasObject.GetComponent<Canvas>();
 
         for (var i = 0; i < dropPoolSize; i++)
         {
@@ -46,8 +46,8 @@ public class DropManager : MonoBehaviour
     [ProButton]
     public void SpawnDrop()
     {
-        var scaleFactor = _gameGUICanvas.scaleFactor;
-        var rect = _gameGUICanvas.GetComponent<RectTransform>().rect;
+        var scaleFactor = gameGUICanvas.scaleFactor;
+        var rect = gameGUICanvas.GetComponent<RectTransform>().rect;
 
         var minX = (int)(Mathf.Abs(rect.xMin) * scaleFactor);
         var maxX = (int)(minX + Mathf.Abs(rect.xMax) * scaleFactor);

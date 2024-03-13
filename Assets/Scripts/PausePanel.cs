@@ -5,44 +5,49 @@ using UnityEngine.UI;
 
 public class PausePanel : MonoBehaviour
 {
-    public static PausePanel Instance { get; private set; }
-    
+    [SerializeField] private GameObject pauseButtonObject;
+
     [SerializeField] private GameObject scoreTextObject;
-    private TextMeshProUGUI _scoreText;
-    
+    private TextMeshProUGUI scoreText;
+
     [SerializeField] private GameObject resumeButtonObject;
-    private Button _resumeButton;
+    private Button resumeButton;
+
+    [SerializeField] private GameObject inputFieldObject;
+    private InputField inputField;
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        
-        _scoreText = scoreTextObject.GetComponent<TextMeshProUGUI>();
-        _resumeButton = resumeButtonObject.GetComponent<Button>();
-        
-        _resumeButton.onClick.AddListener(Resume);
+        scoreText = scoreTextObject.GetComponent<TextMeshProUGUI>();
+        resumeButton = resumeButtonObject.GetComponent<Button>();
+        inputField = inputFieldObject.GetComponent<InputField>();
+
+        resumeButton.onClick.AddListener(Resume);
     }
 
-    private void OnEnable()
-    {
-        UpdatePausePanel();
-    }
-    
-    private void OnDisable()
-    {
-        UpdatePausePanel();
-    }
+    private void OnEnable() => UpdatePausePanel();
+
+    private void OnDisable() => UpdatePausePanel();
 
     [ProButton]
     private void UpdatePausePanel()
     {
-        _scoreText.SetText($"{GameManager.Instance.Score}");
-        Time.timeScale = gameObject.activeSelf ? 0 : 1;
+        var paused = IsPaused();
+
+        scoreText.SetText($"{GameManager.Instance.Score}");
+        pauseButtonObject.SetActive(!paused);
+
+        if (paused)
+        {
+            inputField.Select();
+        }
+
+        Time.timeScale = paused ? 0 : 1;
     }
 
-    private void Resume()
-    {
-        gameObject.SetActive(false);
-    }
+    [ProButton]
+    public void Resume() => gameObject.SetActive(false);
+
+    [ProButton]
+    public bool IsPaused() => gameObject.activeSelf;
 }

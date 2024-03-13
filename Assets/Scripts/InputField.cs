@@ -5,31 +5,32 @@ using UnityEngine;
 public class InputField : MonoBehaviour
 {
     [SerializeField] private int maxDigits = 5;
-    private TMP_InputField _tmpInputField;
+    private TMP_InputField inputField;
 
-    public void Awake()
-    {
-        _tmpInputField = GetComponent<TMP_InputField>();
-    }
+    public void Awake() =>
+        inputField = GetComponent<TMP_InputField>();
 
     private void Start()
     {
-        _tmpInputField.Select();
-        _tmpInputField.onValueChanged.AddListener(OnInputValueChanged);
-        _tmpInputField.onValidateInput += OnValidateInput;
+        Select();
+        inputField.onValueChanged.AddListener(OnInputValueChanged);
+        inputField.onValidateInput += OnValidateInput;
     }
 
+    public void Select() => inputField.Select();
+    
     private void OnInputValueChanged(string newValue)
     {
         if (!int.TryParse(newValue, out var value)) return;
-
+        if (GUIManager.Instance.PausePanel.IsPaused()) return;
+        
         foreach (var drop in
                  DropManager.Instance.SpawnedDrops
                      .Where(drop => drop.IsAlive)
                      .Where(drop => drop.Data.Result == value))
         {
             drop.Resolved();
-            _tmpInputField.text = $"{char.MinValue}";
+            inputField.text = $"{char.MinValue}";
         }
     }
 

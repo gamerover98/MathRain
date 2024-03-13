@@ -1,15 +1,30 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using com.cyborgAssets.inspectorButtonPro;
 using UnityEngine;
 
 public class WaterPanel : MonoBehaviour
 {
+    [SerializeField] private int waterHeight = 100;
     [SerializeField] private List<WaterLevel> waterLevel;
 
-    private void Start()
+    private RectTransform rectTransform;
+    private BoxCollider2D boxCollider;
+
+    private void Awake()
     {
-        UpdateWaterLevel(0);
+        rectTransform = gameObject.GetComponent<RectTransform>();
+        boxCollider = gameObject.GetComponent<BoxCollider2D>();
+    }
+
+    private void Start() => UpdateWaterLevel(0);
+
+    private void Update()
+    {
+        if (rectTransform.hasChanged)
+        {
+            UpdateBoxCollider();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -21,6 +36,7 @@ public class WaterPanel : MonoBehaviour
         GameManager.Instance.WaterLevel += 1;
     }
 
+    [ProButton]
     public void UpdateWaterLevel(int level)
     {
         if (waterLevel.Count == 0)
@@ -29,23 +45,21 @@ public class WaterPanel : MonoBehaviour
             return;
         }
 
-        var wl = waterLevel.FirstOrDefault(current => current.level == level);
-
-        if (wl == null)
-        {
-            Debug.Log($"Undefined water level: {level}");
-            wl = waterLevel.OrderByDescending(current => current.level).FirstOrDefault();
-        }
-
-        var waterLevelObject = wl!.gameObject;
-        var wlTransform = waterLevelObject.transform as RectTransform;
-        var height = (wlTransform!.position.y + wlTransform.rect.height);
-        var panelTransform = transform as RectTransform;
-
-        panelTransform!.position =
+        rectTransform.sizeDelta =
             new Vector2(
-                panelTransform.position.x,
-                -panelTransform.rect.height + height);
+                rectTransform.sizeDelta.x,
+                waterHeight + waterHeight / 2F * level);
+    }
+
+    private void UpdateBoxCollider()
+    {
+        var anchoredPosition = rectTransform.anchoredPosition;
+        var sizeDelta = rectTransform.sizeDelta;
+
+        boxCollider.size = sizeDelta;
+        boxCollider.offset = 
+            new Vector2(anchoredPosition.x,
+                anchoredPosition.y + sizeDelta.y / 2F);
     }
 }
 

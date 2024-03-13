@@ -6,17 +6,17 @@ public class GUIManager : MonoBehaviour
 {
     public static GUIManager Instance { get; private set; }
 
-    [SerializeField] private GameObject pausePanel;
-    private PausePanel _pausePanel;
+    [SerializeField] private GameObject pausePanelObject;
+    public PausePanel PausePanel { get; private set; }
 
     [SerializeField] private GameObject scoreTextObject;
-    private TextMeshProUGUI _scoreText;
+    private TextMeshProUGUI scoreText;
 
     [SerializeField] private GameObject waterPanelObject;
-    private WaterPanel _waterPanel;
+    private WaterPanel waterPanel;
 
     [SerializeField] private GameObject pauseButtonObject;
-    private Button _pauseButton;
+    private Button pauseButton;
 
     // Start is called before the first frame update
     private void Awake()
@@ -24,22 +24,18 @@ public class GUIManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
 
-        _scoreText = scoreTextObject.GetComponent<TextMeshProUGUI>();
-        _waterPanel = waterPanelObject.GetComponent<WaterPanel>();
-        _pausePanel = pausePanel.GetComponent<PausePanel>();
-        _pauseButton = pauseButtonObject.GetComponent<Button>();
+        PausePanel = pausePanelObject.GetComponent<PausePanel>();
+        scoreText = scoreTextObject.GetComponent<TextMeshProUGUI>();
+        waterPanel = waterPanelObject.GetComponent<WaterPanel>();
+        pauseButton = pauseButtonObject.GetComponent<Button>();
 
-        _pauseButton.onClick.AddListener(Pause);
+        pauseButton.onClick.AddListener(() => pausePanelObject.SetActive(true));
     }
 
     public void UpdateScoreText(int newScore) =>
-        _scoreText.SetText($"Score: {newScore}");
+        scoreText.SetText($"Score: {newScore}");
 
     public void UpdateWaterLevel(int newWaterLevel) =>
-        _waterPanel.UpdateWaterLevel(newWaterLevel);
+        waterPanel.UpdateWaterLevel(newWaterLevel);
 
-    private void Pause()
-    {
-        pausePanel.SetActive(true);
-    }
 }
