@@ -15,6 +15,12 @@ public class PausePanel : MonoBehaviour
 
     [SerializeField] private GameObject resumeButtonObject;
     private Button resumeButton;
+    
+    [SerializeField] private GameObject restartButtonObject;
+    private Button restartButton;
+    
+    [SerializeField] private GameObject exitButtonObject;
+    private Button exitButton;
 
     [SerializeField] private GameObject inputFieldObject;
     private InputField inputField;
@@ -24,9 +30,13 @@ public class PausePanel : MonoBehaviour
         maxScoreText = maxScoreTextObject.GetComponent<TextMeshProUGUI>();
         currentScoreText = currentScoreTextObject.GetComponent<TextMeshProUGUI>();
         resumeButton = resumeButtonObject.GetComponent<Button>();
+        restartButton = restartButtonObject.GetComponent<Button>();
+        exitButton = exitButtonObject.GetComponent<Button>();
         inputField = inputFieldObject.GetComponent<InputField>();
 
         resumeButton.onClick.AddListener(Resume);
+        restartButton.onClick.AddListener(Restart);
+        exitButton.onClick.AddListener(Exit);
     }
 
     private void OnEnable() => UpdatePausePanel();
@@ -52,6 +62,16 @@ public class PausePanel : MonoBehaviour
 
     [ProButton]
     public void Resume() => gameObject.SetActive(false);
+
+    [ProButton]
+    public void Restart()
+    {
+        GameManager.Instance.ResetGame();
+        Resume();
+    }
+    
+    [ProButton]
+    public void Exit() => MainMenuPanel.Instance.gameObject.SetActive(true);
 
     [ProButton]
     public bool IsPaused() => gameObject.activeSelf;

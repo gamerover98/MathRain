@@ -6,6 +6,9 @@ public class GUIManager : MonoBehaviour
 {
     public static GUIManager Instance { get; private set; }
 
+    [SerializeField] private GameObject mainMenuPanelObject;
+    public MainMenuPanel MainMenuPanel { get; private set; }
+    
     [SerializeField] private GameObject pausePanelObject;
     public PausePanel PausePanel { get; private set; }
 
@@ -24,6 +27,7 @@ public class GUIManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
 
+        MainMenuPanel = mainMenuPanelObject.GetComponent<MainMenuPanel>();
         PausePanel = pausePanelObject.GetComponent<PausePanel>();
         scoreText = scoreTextObject.GetComponent<TextMeshProUGUI>();
         waterPanel = waterPanelObject.GetComponent<WaterPanel>();

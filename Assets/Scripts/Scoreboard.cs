@@ -11,6 +11,13 @@ public class Scoreboard
     public void AddGame(Game game) => games.Add(game);
 
     public int GetMaxScore() => games.Max(game => game.score);
+    
+    public List<Game> GetGamesSortedByScoreDescending()
+    {
+        var sortedGames = new List<Game>(games);
+        sortedGames.Sort((g1, g2) => g2.score.CompareTo(g1.score));
+        return sortedGames;
+    }
 }
 
 [Serializable]
