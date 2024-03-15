@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
                 //TODO: endgame
                 Debug.Log("END GAME!!!");
                 SaveGameScore();
+                GUIManager.Instance.EndGamePanel.gameObject.SetActive(true);
                 ResetGame();
             }
         }
@@ -72,7 +73,7 @@ public class GameManager : MonoBehaviour
     public void ResetGame()
     {
         Score = 0;
-        //TODO: reset input text field
+        if (GUIManager.Instance) GUIManager.Instance.InputField.Reset();
         foreach (var spawnedDrop in DropManager.Instance.SpawnedDrops)
             DropManager.Instance.ReturnObjectToPool(spawnedDrop);
     }

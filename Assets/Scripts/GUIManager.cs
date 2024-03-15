@@ -8,9 +8,15 @@ public class GUIManager : MonoBehaviour
 
     [SerializeField] private GameObject mainMenuPanelObject;
     public MainMenuPanel MainMenuPanel { get; private set; }
-    
+
     [SerializeField] private GameObject pausePanelObject;
     public PausePanel PausePanel { get; private set; }
+    
+    [SerializeField] private GameObject endGameMenuPanelObject;
+    public EndGameMenuPanel EndGamePanel { get; private set; }
+
+    [SerializeField] private GameObject inputFieldObject;
+    public InputField InputField { get; private set; }
 
     [SerializeField] private GameObject scoreTextObject;
     private TextMeshProUGUI scoreText;
@@ -29,9 +35,11 @@ public class GUIManager : MonoBehaviour
 
         MainMenuPanel = mainMenuPanelObject.GetComponent<MainMenuPanel>();
         PausePanel = pausePanelObject.GetComponent<PausePanel>();
+        EndGamePanel = endGameMenuPanelObject.GetComponent<EndGameMenuPanel>();
         scoreText = scoreTextObject.GetComponent<TextMeshProUGUI>();
         waterPanel = waterPanelObject.GetComponent<WaterPanel>();
         pauseButton = pauseButtonObject.GetComponent<Button>();
+        InputField = inputFieldObject.GetComponent<InputField>();
 
         pauseButton.onClick.AddListener(() => pausePanelObject.SetActive(true));
     }
@@ -41,5 +49,4 @@ public class GUIManager : MonoBehaviour
 
     public void UpdateWaterLevel(int newWaterLevel) =>
         waterPanel.UpdateWaterLevel(newWaterLevel);
-
 }

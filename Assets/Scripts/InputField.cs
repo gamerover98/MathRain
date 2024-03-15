@@ -18,6 +18,8 @@ public class InputField : MonoBehaviour
     }
 
     public void Select() => inputField.Select();
+
+    public void Reset() => inputField.text = "";
     
     private void OnInputValueChanged(string newValue)
     {
