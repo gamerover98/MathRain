@@ -1,5 +1,4 @@
-﻿using com.cyborgAssets.inspectorButtonPro;
-using Menu;
+﻿using Menu;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,12 +33,12 @@ public class InGameMenu : MonoMenu
         inputField.Select();
         GameManager.FreezeTime(false);
         GameManager.Instance.Score = GameManager.Instance.Score; // update score.
+        DropManager.Instance.StartDropCoroutine();
     }
 
     public override void Close() => GameManager.FreezeTime(true);
 
-    [ProButton]
-    private void Pause() => 
+  private static void Pause() => 
         GUIManager.Instance.CurrentMenu = GUIManager.Instance.PauseMenu;
 
     public void UpdateScoreText(int newScore) =>

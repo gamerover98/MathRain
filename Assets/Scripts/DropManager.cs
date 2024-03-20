@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using com.cyborgAssets.inspectorButtonPro;
 using JetBrains.Annotations;
@@ -20,8 +21,9 @@ public class DropManager : MonoBehaviour
     [SerializeField] private int dropPoolSize = 10;
     [SerializeField] private List<DropData> dropDataList;
 
-    public readonly Stack<Drop> DropPool = new();
-
+    private readonly Stack<Drop> dropPool = new();
+    private Coroutine dropCoroutine;    
+    
     private void Awake()
     {
         if (Instance == null)
@@ -39,10 +41,27 @@ public class DropManager : MonoBehaviour
                     dropsContainer.transform);
             dropObject.SetActive(false);
 
-            DropPool.Push(dropObject.GetComponent<Drop>());
+            dropPool.Push(dropObject.GetComponent<Drop>());
         }
     }
 
+    public void StartDropCoroutine() =>
+        dropCoroutine = StartCoroutine(SpawnRepeatedly());
+
+    public void StopDropCoroutine()
+    {
+        if (dropCoroutine != null) StopCoroutine(dropCoroutine);
+    }
+    
+    private IEnumerator SpawnRepeatedly()
+    {
+        while (true)
+        {
+            SpawnDrop();
+            yield return new WaitForSeconds(2.5F);
+        }
+    }
+    
     [ProButton]
     public void SpawnDrop()
     {
@@ -71,7 +90,7 @@ public class DropManager : MonoBehaviour
         dropTransform.position = new Vector2(0, 0);
         dropTransform.rotation = Quaternion.identity;
         
-        DropPool.Push(drop);
+        dropPool.Push(drop);
         spawnedDrops.Remove(drop);
     }
 
@@ -84,9 +103,9 @@ public class DropManager : MonoBehaviour
     [CanBeNull]
     private Drop GetDropFromPool(Vector2 position, DropData dropData)
     {
-        if (DropPool.Count <= 0) return null;
+        if (dropPool.Count <= 0) return null;
 
-        var drop = DropPool.Pop();
+        var drop = dropPool.Pop();
         drop.Data = dropData;
 
         var dropObject = drop.gameObject;

@@ -5568,8 +5568,14 @@ MonoBehaviour:
   dropObjectPrefab: {fileID: 1209178879832375651, guid: 80a84c117d48c4c4cbc1f0864fcdeda9, type: 3}
   dropPoolSize: 30
   dropDataList:
+  - {fileID: 11400000, guid: 6e31ec1b8e271a544b98639cc868a92f, type: 2}
   - {fileID: 11400000, guid: 4da7f050d41985f4c9e7923ef49e2bd7, type: 2}
+  - {fileID: 11400000, guid: 00a4c727c5d121f4294a4b1c3c5058c5, type: 2}
+  - {fileID: 11400000, guid: fe2660e4d7ca2f04a9f57970a73f830a, type: 2}
   - {fileID: 11400000, guid: 2d775a68f200e7542b41dc75a3f2ab12, type: 2}
+  - {fileID: 11400000, guid: 744605e4629117645b457cb9feb8b656, type: 2}
+  - {fileID: 11400000, guid: ebba52beb8b46f549976ea6ee082d1fc, type: 2}
+  - {fileID: 11400000, guid: a9e6f6fabfd8ce740b7711b8418edf24, type: 2}
 --- !u!4 &1406689420
 Transform:
   m_ObjectHideFlags: 0

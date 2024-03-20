@@ -23,13 +23,11 @@ public class MainMenu : MonoMenu
     public override void Open()
     {
         GameManager.FreezeTime(true);
+        DropManager.Instance.StopDropCoroutine();
         UpdateScoreboardText();
     }
 
-    public override void Close()
-    {
-        GameManager.ResetAndClean();
-    }
+    public override void Close() => GameManager.ResetAndClean();
 
     private void UpdateScoreboardText()
     {
