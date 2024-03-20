@@ -12,14 +12,19 @@ public class MainMenu : MonoMenu
     [SerializeField] private GameObject contentTextAreObject;
     private TextMeshProUGUI contentText;
 
+    [SerializeField] private GameObject exitGameObject;
+    private Button exitGame;
+
     private void Awake()
     {
         contentText = contentTextAreObject.GetComponent<TextMeshProUGUI>();
         newGameButton = newGameButtonObject.GetComponent<Button>();
+        exitGame = exitGameObject.GetComponent<Button>();
 
         newGameButton.onClick.AddListener(GameManager.StartNewGame);
+        exitGame.onClick.AddListener(Application.Quit);
     }
-
+    
     public override void Open()
     {
         GameManager.FreezeTime(true);

@@ -4304,6 +4304,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   newGameButtonObject: {fileID: 621180478}
   contentTextAreObject: {fileID: 122447733}
+  exitGameObject: {fileID: 586392299}
 --- !u!1 &1085466347
 GameObject:
   m_ObjectHideFlags: 0
