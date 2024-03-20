@@ -5,6 +5,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    public GameState GameState { get; private set; } = GameState.Idle;
+
     [SerializeField] private int maxWaterLevel = 2;
 
     private int score;
@@ -16,7 +18,7 @@ public class GameManager : MonoBehaviour
         set
         {
             score = value;
-            GUIManager.Instance.UpdateScoreText(score);
+            (GUIManager.Instance.CurrentMenu as InGameMenu)?.UpdateScoreText(score);
         }
     }
 
@@ -29,52 +31,109 @@ public class GameManager : MonoBehaviour
         set
         {
             waterLevel = value;
-            GUIManager.Instance.UpdateWaterLevel(waterLevel);
+            (GUIManager.Instance.CurrentMenu as InGameMenu)?.UpdateWaterLevel(waterLevel);
 
-            if (value >= maxWaterLevel)
-            {
-                //TODO: endgame
-                Debug.Log("END GAME!!!");
-                SaveGameScore();
-                GUIManager.Instance.EndGamePanel.gameObject.SetActive(true);
-                ResetGame();
-            }
+            if (value < maxWaterLevel) return;
+            SaveGameScore();
+            EndGame();
         }
     }
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
+        GameState = GameState.Idle;
     }
-
-    private void Start()
-    {
-        WaterLevel = 0;
-    }
-
+    
     [ProButton]
-    public void SaveGameScore()
+    public static void SaveGameScore()
     {
+        if (Instance == null)
+        {
+            Debug.LogWarning("The GameManager is null, can't save the game");
+            return;
+        }
+
+        var score = Instance.Score;
         var scoreboard = LoadScoreboard();
-        scoreboard.AddGame(new Game(Score));
+        if (score > 0) scoreboard.AddGame(new Game(score));
 
         PlayerPrefs.SetString("Scoreboard", JsonUtility.ToJson(scoreboard));
         PlayerPrefs.Save();
     }
 
-    public Scoreboard LoadScoreboard()
-    {
-        return PlayerPrefs.HasKey("Scoreboard")
-            ? JsonUtility.FromJson<Scoreboard>(PlayerPrefs.GetString("Scoreboard", "{}"))
-            : new Scoreboard();
+    public static Scoreboard LoadScoreboard()
+    { 
+        Scoreboard result = null;
+
+        if (PlayerPrefs.HasKey("Scoreboard"))
+            result = 
+                JsonUtility.FromJson<Scoreboard>(
+                    PlayerPrefs.GetString("Scoreboard", "{}"));
+        
+        result ??= new Scoreboard();
+        return result;
     }
 
-    [ProButton]
-    public void ResetGame()
+    public static void StartNewGame()
     {
-        Score = 0;
-        if (GUIManager.Instance) GUIManager.Instance.InputField.Reset();
-        foreach (var spawnedDrop in DropManager.Instance.SpawnedDrops)
-            DropManager.Instance.ReturnObjectToPool(spawnedDrop);
+        if (Instance == null)
+        {
+            Debug.LogWarning("The GameManager is null, cannot start the game.");
+            return;
+        }
+        
+        ResetAndClean();
+        Instance.GameState = GameState.InGame;
+        GUIManager.Instance.CurrentMenu = GUIManager.Instance.InGameMenu;
     }
+
+    public static void EndGame()
+    {
+        if (Instance == null)
+        {
+            Debug.LogWarning("The GameManager is null, cannot end the game.");
+            return;
+        }
+        
+        FreezeTime(true);
+        ResetAndClean();
+        Instance.GameState = GameState.EndGame;
+        GUIManager.Instance.CurrentMenu = GUIManager.Instance.EndGameMenu;
+    }
+
+    public static void IdleGame()
+    {
+        if (Instance == null)
+        {
+            Debug.LogWarning("The GameManager is null, cannot idle the game.");
+            return;
+        }
+        
+        FreezeTime(true);
+        ResetAndClean();
+        Instance.GameState = GameState.Idle;
+        GUIManager.Instance.CurrentMenu = GUIManager.Instance.MainMenu;
+    }
+    
+    /// <summary>
+    /// Utility method to freeze or unfreeze the time scale.
+    /// </summary>
+    /// <param name="freeze">Boolean value indicating whether to freeze (<c>true</c>)
+    ///                      or unfreeze (<c>false</c>) the time scale.</param>
+    public static void FreezeTime(bool freeze) => Time.timeScale = freeze ? 0 : 1;
+    
+    public static void ResetAndClean()
+    {
+        Instance.Score = 0;
+        Instance.WaterLevel = 0;
+        DropManager.Instance.DespawnAllDrops();
+    }
+}
+
+public enum GameState
+{
+    Idle,
+    InGame,
+    EndGame
 }

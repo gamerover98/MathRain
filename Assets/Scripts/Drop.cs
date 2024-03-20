@@ -8,85 +8,74 @@ public class Drop : MonoBehaviour
     [SerializeField] private GameObject operationText;
     [SerializeField] private GameObject firstNumberText;
     [SerializeField] private GameObject secondNumberText;
-    [SerializeField] private DropData data;
 
-    public DropData Data
-    {
-        get => data;
-        [ProButton]
-        set
-        {
-            data = value;
-            UpdateDropData();
-        }
-    }
+    public DropData Data { get; [ProButton] set; }
 
     [SerializeField] private GameObject dropImage;
     [SerializeField] private GameObject splashImage;
     [SerializeField] private float splashAnimationTtl;
 
-    private Canvas _gameGUICanvas;
-    private TextMeshProUGUI _operatorTextGUI;
-    private TextMeshProUGUI _firstNumberTextGUI;
-    private TextMeshProUGUI _secondNumberTextGUI;
+    private Canvas gameGUICanvas;
+    private TextMeshProUGUI operatorTextGUI;
+    private TextMeshProUGUI firstNumberTextGUI;
+    private TextMeshProUGUI secondNumberTextGUI;
 
-    private DropStateType _stateType = DropStateType.Alive;
+    private DropStateType stateType = DropStateType.Alive;
 
-    public bool IsAlive => _stateType == DropStateType.Alive;
-    public bool IsResolved => _stateType == DropStateType.Resolved;
-    public bool IsSplashed => _stateType == DropStateType.Splash;
+    public bool IsAlive => stateType == DropStateType.Alive;
+    public bool IsResolved => stateType == DropStateType.Resolved;
+    public bool IsSplashed => stateType == DropStateType.Splash;
 
-    private Coroutine _coroutine;
-    private float _splashAnimationStartTime = -1;
+    private Coroutine coroutine;
+    private float splashAnimationStartTime = -1;
 
     private void Awake()
     {
-        _operatorTextGUI = operationText.GetComponent<TextMeshProUGUI>();
-        _firstNumberTextGUI = firstNumberText.GetComponent<TextMeshProUGUI>();
-        _secondNumberTextGUI = secondNumberText.GetComponent<TextMeshProUGUI>();
-        OnEnable();
+        operatorTextGUI = operationText.GetComponent<TextMeshProUGUI>();
+        firstNumberTextGUI = firstNumberText.GetComponent<TextMeshProUGUI>();
+        secondNumberTextGUI = secondNumberText.GetComponent<TextMeshProUGUI>();
     }
-    
+
     private void Update()
     {
         if (!IsSplashed && !IsResolved) return;
 
-        if (_splashAnimationStartTime < 0)
-            _splashAnimationStartTime = Time.time;
+        if (splashAnimationStartTime < 0)
+            splashAnimationStartTime = Time.time;
 
-        if (!(Time.time - _splashAnimationStartTime >= splashAnimationTtl)) return;
+        if (!(Time.time - splashAnimationStartTime >= splashAnimationTtl)) return;
 
-        DropManager.Instance.ReturnObjectToPool(this);
-        _splashAnimationStartTime = -1;
+        DropManager.Instance.DespawnDrop(this);
+        splashAnimationStartTime = -1;
     }
 
     private void OnEnable()
     {
-        _gameGUICanvas = GetComponentInParent<Canvas>();
-        _stateType = DropStateType.Alive;
+        gameGUICanvas = GetComponentInParent<Canvas>();
+        stateType = DropStateType.Alive;
         UpdateDropData();
-        _coroutine = StartCoroutine(Coroutine());
+        coroutine = StartCoroutine(Coroutine());
     }
 
     private void OnDisable()
     {
-        if (_stateType == DropStateType.Alive)
-            _stateType = DropStateType.Splash;
+        if (stateType == DropStateType.Alive)
+            stateType = DropStateType.Splash;
 
         dropImage.SetActive(true);
         splashImage.SetActive(false);
 
-        if (_coroutine != null)
-            StopCoroutine(_coroutine);
+        if (coroutine != null)
+            StopCoroutine(coroutine);
     }
-    
+
     private IEnumerator Coroutine()
     {
         while (true)
         {
             if (!IsAlive) yield break;
 
-            var vector = new Vector2(0.0F, 9.81F * -Data.Speed) * _gameGUICanvas.scaleFactor;
+            var vector = new Vector2(0.0F, 9.81F * -Data.Speed) * gameGUICanvas.scaleFactor;
             transform.Translate(vector * Time.deltaTime);
             yield return null;
         }
@@ -94,7 +83,7 @@ public class Drop : MonoBehaviour
 
     public void Resolved()
     {
-        _stateType = DropStateType.Resolved;
+        stateType = DropStateType.Resolved;
         dropImage.SetActive(false);
         splashImage.SetActive(true);
 
@@ -103,16 +92,16 @@ public class Drop : MonoBehaviour
 
     public void Splash()
     {
-        _stateType = DropStateType.Splash;
+        stateType = DropStateType.Splash;
         dropImage.SetActive(false);
         splashImage.SetActive(true);
     }
 
     private void UpdateDropData()
     {
-        _operatorTextGUI.SetText(Data.OperatorType.GetSymbol());
-        _firstNumberTextGUI.SetText(Data.FirstNumber.ToString());
-        _secondNumberTextGUI.SetText(Data.SecondNumber.ToString());
+        operatorTextGUI.SetText(Data.OperatorType.GetSymbol());
+        firstNumberTextGUI.SetText(Data.FirstNumber.ToString());
+        secondNumberTextGUI.SetText(Data.SecondNumber.ToString());
     }
 }
 

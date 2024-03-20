@@ -24,7 +24,7 @@ public class InputField : MonoBehaviour
     private void OnInputValueChanged(string newValue)
     {
         if (!int.TryParse(newValue, out var value)) return;
-        if (GUIManager.Instance.PausePanel.IsPaused()) return;
+        if (GUIManager.Instance.PauseMenu.IsPaused()) return;
         
         foreach (var drop in
                  DropManager.Instance.SpawnedDrops

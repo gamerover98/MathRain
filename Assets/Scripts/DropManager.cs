@@ -12,9 +12,9 @@ public class DropManager : MonoBehaviour
     private Canvas gameGUICanvas;
 
     [SerializeField] private GameObject dropsContainer;
-    
-    public IEnumerable<Drop> SpawnedDrops =>
-        gameGUICanvasObject.GetComponentsInChildren<Drop>();
+
+    private readonly List<Drop> spawnedDrops = new();
+    public List<Drop> SpawnedDrops => new(spawnedDrops.AsReadOnly());
 
     [SerializeField] private GameObject dropObjectPrefab;
     [SerializeField] private int dropPoolSize = 10;
@@ -59,11 +59,30 @@ public class DropManager : MonoBehaviour
         var positionX = (float)random.Next(200, maxX - 200);
 
         var position = new Vector2(positionX, maxY + 100 * scaleFactor);
-        GetDropFromPool(position, dropData);
+        var spawnedDrop = GetDropFromPool(position, dropData);
+        if (spawnedDrop != null) spawnedDrops.Add(spawnedDrop);
     }
 
+    public void DespawnDrop(Drop drop)
+    {
+        drop.gameObject.SetActive(false);
+        var dropTransform = drop.transform;
+
+        dropTransform.position = new Vector2(0, 0);
+        dropTransform.rotation = Quaternion.identity;
+        
+        DropPool.Push(drop);
+        spawnedDrops.Remove(drop);
+    }
+
+    public void DespawnAllDrops()
+    {
+        foreach (var spawnedDrop in SpawnedDrops)
+            DespawnDrop(spawnedDrop);
+    }
+    
     [CanBeNull]
-    public Drop GetDropFromPool(Vector2 position, DropData dropData)
+    private Drop GetDropFromPool(Vector2 position, DropData dropData)
     {
         if (DropPool.Count <= 0) return null;
 
@@ -75,15 +94,5 @@ public class DropManager : MonoBehaviour
         dropObject.transform.rotation = Quaternion.identity;
         dropObject.SetActive(true);
         return drop;
-    }
-
-    public void ReturnObjectToPool(Drop drop)
-    {
-        drop.gameObject.SetActive(false);
-        var dropTransform = drop.transform;
-
-        dropTransform.position = new Vector2(0, 0);
-        dropTransform.rotation = Quaternion.identity;
-        DropPool.Push(drop);
     }
 }

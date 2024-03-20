@@ -1,9 +1,10 @@
 using com.cyborgAssets.inspectorButtonPro;
+using Menu;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EndGameMenuPanel : MonoBehaviour
+public class EndGameMenu : MonoMenu
 {
     [SerializeField] private GameObject maxScoreTextObject;
     private TextMeshProUGUI maxScoreText;
@@ -16,42 +17,39 @@ public class EndGameMenuPanel : MonoBehaviour
 
     [SerializeField] private GameObject exitButtonObject;
     private Button exitButton;
-
-    private void Start()
+    
+    private void Awake()
     {
         maxScoreText = maxScoreTextObject.GetComponent<TextMeshProUGUI>();
         currentScoreText = currentScoreTextObject.GetComponent<TextMeshProUGUI>();
         restartButton = restartButtonObject.GetComponent<Button>();
         exitButton = exitButtonObject.GetComponent<Button>();
+        
+        restartButton.onClick.AddListener(Restart);
+        exitButton.onClick.AddListener(Exit);
     }
-    
-    private void OnEnable() => UpdateEndGamePanel();
 
-    private void OnDisable() => UpdateEndGamePanel();
-    
+    public override void Open()
+    {
+        GameManager.FreezeTime(true);
+        UpdateEndGamePanel();
+    }
+
+    public override void Close()
+    {
+        // Nothing to do.
+    }
+
     [ProButton]
+    private static void Restart() => GameManager.StartNewGame();
+
+    [ProButton]
+    private static void Exit() => 
+        GUIManager.Instance.CurrentMenu = GUIManager.Instance.MainMenu;
+    
     private void UpdateEndGamePanel()
     {
-        var isGameEnded = IsGameEnded();
-
-        maxScoreText.SetText($"{GameManager.Instance.LoadScoreboard().GetMaxScore()}");
+        maxScoreText.SetText($"{GameManager.LoadScoreboard().GetMaxScore()}");
         currentScoreText.SetText($"{GameManager.Instance.Score}");
-        Time.timeScale = isGameEnded ? 0 : 1;
     }
-
-    [ProButton]
-    public void Resume() => gameObject.SetActive(false);
-
-    [ProButton]
-    public void Restart()
-    {
-        GameManager.Instance.ResetGame();
-        Resume();
-    }
-    
-    [ProButton]
-    public void Exit() => MainMenuPanel.Instance.gameObject.SetActive(true);
-
-    [ProButton]
-    public bool IsGameEnded() => gameObject.activeSelf;
 }

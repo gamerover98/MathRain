@@ -10,8 +10,9 @@ public class Scoreboard
 
     public void AddGame(Game game) => games.Add(game);
 
-    public int GetMaxScore() => games.Max(game => game.score);
-    
+    public int GetMaxScore() => 
+        games.Count > 0 ? games.Max(game => game.score) : 0;
+
     public List<Game> GetGamesSortedByScoreDescending()
     {
         var sortedGames = new List<Game>(games);
